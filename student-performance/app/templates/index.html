@@ -1,31 +1,65 @@
 <!DOCTYPE html>
-
 <html>
 <head>
     <title>Student Performance Predictor</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            text-align: center;
+            color: white;
+        }
+
+        .container {
+            margin-top: 100px;
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        h1 {
+            margin-top: 50px;
+        }
+    </style>
 </head>
+
 <body>
 
-```
-<h2>Student Performance Predictor</h2>
+<h1>🎓 Student Performance Predictor</h1>
 
-<form action="/predict_form" method="post">
+<div class="container">
+    <form action="/predict" method="post">
 
-    <label>Study Time:</label><br>
-    <input type="number" name="studytime"><br><br>
+        <input type="number" name="studytime" placeholder="Study Time" required><br>
 
-    <label>Failures:</label><br>
-    <input type="number" name="failures"><br><br>
+        <input type="number" name="failures" placeholder="Failures" required><br>
 
-    <label>Absences:</label><br>
-    <input type="number" name="absences"><br><br>
+        <input type="number" name="absences" placeholder="Absences" required><br>
 
-    <input type="submit" value="Predict">
+        <button type="submit">Predict</button>
+    </form>
 
-</form>
-
-<h3>{{ prediction_text }}</h3>
-```
+    <h2>{{ prediction_text }}</h2>
+</div>
 
 </body>
 </html>
