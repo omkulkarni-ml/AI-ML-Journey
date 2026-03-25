@@ -6,8 +6,12 @@ import pandas as pd
 app = Flask(__name__)
 
 # Load model
-model = joblib.load('../models/model.pkl')
-columns = joblib.load('../models/columns.pkl')
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, '..', 'models', 'model.pkl')
+model = joblib.load(model_path)
+columns_path = os.path.join(BASE_DIR, '..', 'models', 'columns.pkl')
+columns = joblib.load(columns_path)
 
 @app.route('/')
 def home():
