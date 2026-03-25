@@ -61,5 +61,22 @@
     <h2>{{ prediction_text }}</h2>
 </div>
 
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+
+    <div class="card">
+        <h1>Welcome 🚀</h1>
+        <p>Predict student performance using ML</p>
+
+        <a href="/predict-page">
+            <button>Start Prediction</button>
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+
 </body>
 </html>

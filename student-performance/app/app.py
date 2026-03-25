@@ -17,7 +17,9 @@ columns = joblib.load(columns_path)
 def home():
     return render_template('index.html')
 
-
+@app.route('/predict-page')
+def predict_page():
+    return render_template('predict.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -34,8 +36,8 @@ def predict():
 
     prediction = model.predict(input_df)
 
-    return render_template('index.html',
-                           prediction_text=f"Predicted Score: {round(prediction[0],2)}")
+    return render_template('result.html',
+                           prediction=round(prediction[0], 2))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+
+    <div class="card">
+        <h2>Prediction Result</h2>
+        <h1>{{ prediction }}</h1>
+
+        <a href="/predict-page">
+            <button>Try Again</button>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

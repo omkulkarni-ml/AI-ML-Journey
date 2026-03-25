@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+
+    <div class="card">
+        <h2>Enter Student Details</h2>
+
+        <form action="/predict" method="post">
+            <input type="number" name="studytime" placeholder="Study Time" required>
+            <input type="number" name="failures" placeholder="Failures" required>
+            <input type="number" name="absences" placeholder="Absences" required>
+
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
