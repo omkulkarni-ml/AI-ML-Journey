@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify, render_template
 import joblib
 import numpy as np
+import pandas as pd
 
 app = Flask(__name__)
 
 # Load model
 model = joblib.load('../models/model.pkl')
+columns = joblib.load('../models/columns.pkl')
 
 @app.route('/')
 def home():
@@ -31,14 +33,17 @@ def predict_form():
     failures = int(request.form['failures'])
     absences = int(request.form['absences'])
 
-    # temporary feature array (same issue fix)
-    features = np.zeros((1, 41))
+    input_df = pd.DataFrame(columns=columns)
+    
+    # initialize all values to 0
+    input_df.loc[0] = 0
+   
+    # assign user inputs
+    input_df['studytime'] = studytime
+    input_df['failures'] = failures
+    input_df['absences'] = absences
 
-    features[0][0] = studytime
-    features[0][1] = failures
-    features[0][2] = absences
-
-    prediction = model.predict(features)
+    prediction = model.predict(input_df)
 
     return render_template('index.html',
                            prediction_text=f"Predicted Score: {prediction[0]:.2f}")
