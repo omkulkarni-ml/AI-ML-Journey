@@ -226,13 +226,13 @@ def login():
         user.last_login_at = datetime.utcnow()
         db.session.commit()
         
-        # Generate tokens
+        # Generate tokens - convert user.id to string for JWT compatibility
         access_token = create_access_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(hours=1)
         )
         refresh_token = create_refresh_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(days=30)
         )
         
@@ -275,7 +275,7 @@ def login():
 def refresh():
     """Refresh access token using refresh token."""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user or not user.is_active:
@@ -286,7 +286,7 @@ def refresh():
         
         # Create new access token
         access_token = create_access_token(
-            identity=user_id,
+            identity=str(user_id),
             expires_delta=timedelta(hours=1)
         )
         
@@ -315,7 +315,7 @@ def logout():
         jti = get_jwt()['jti']
         blacklist.add(jti)
         
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         logger.info(f"User logged out: {user_id}")
         
         return jsonify({
@@ -336,7 +336,7 @@ def logout():
 def get_current_user():
     """Get current authenticated user info."""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -375,7 +375,7 @@ def update_onboarding():
         }
     """
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -451,7 +451,7 @@ def change_password():
         }
     """
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
