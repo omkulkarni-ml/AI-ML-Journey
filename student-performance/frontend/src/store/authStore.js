@@ -60,7 +60,17 @@ const useAuthStore = create(
           set({ isLoading: false })
           return { success: true, data: response.data }
         } catch (error) {
-          const message = error.response?.data?.error || 'Registration failed'
+          console.error('Registration error:', error)
+          let message = 'Registration failed'
+          if (error.response?.data?.error) {
+            message = error.response.data.error
+          } else if (error.message === 'Network Error') {
+            message = 'Network error: Cannot connect to server. Please check your connection or try again later.'
+          } else if (error.code === 'ERR_CORS') {
+            message = 'CORS error: Server configuration issue. Please contact support.'
+          } else if (error.message) {
+            message = `Registration failed: ${error.message}`
+          }
           set({ isLoading: false, error: message })
           return { success: false, error: message }
         }
