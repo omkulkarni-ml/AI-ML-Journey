@@ -142,9 +142,11 @@ def register():
     except Exception as e:
         db.session.rollback()
         logger.error(f"Registration error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({
             'success': False,
-            'error': 'Registration failed. Please try again.'
+            'error': f'Registration failed: {str(e)}'
         }), 500
 
 
