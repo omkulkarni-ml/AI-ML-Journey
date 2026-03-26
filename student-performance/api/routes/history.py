@@ -25,7 +25,7 @@ def get_prediction_history():
         order: Sort order (asc/desc, default: desc)
     """
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Parse query parameters
         page = request.args.get('page', 1, type=int)
@@ -83,7 +83,7 @@ def get_prediction_history():
 def get_prediction_detail(prediction_id):
     """Get detailed information about a specific prediction."""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         prediction = PredictionHistory.query.filter_by(
             id=prediction_id,
@@ -115,7 +115,7 @@ def get_prediction_detail(prediction_id):
 def delete_prediction(prediction_id):
     """Delete a prediction from history."""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         prediction = PredictionHistory.query.filter_by(
             id=prediction_id,
@@ -153,7 +153,7 @@ def delete_prediction(prediction_id):
 def get_prediction_stats():
     """Get prediction statistics for current user."""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get total predictions
         total = PredictionHistory.query.filter_by(user_id=user_id).count()

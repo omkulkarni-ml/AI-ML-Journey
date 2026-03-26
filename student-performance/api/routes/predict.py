@@ -71,7 +71,7 @@ def predict():
     # Try to save to history if user is authenticated
     try:
         verify_jwt_in_request(optional=True)
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         if user_id:
             # Extract grade and confidence from result
             prediction_grade = result.get('grade', '').split()[0] if result.get('grade') else None
