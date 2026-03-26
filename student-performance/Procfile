@@ -1,1 +1,1 @@
-web: cd student-performance/api && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60 "app:create_app()"
+web: cd api && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 "app:create_app()"

@@ -55,12 +55,16 @@ def create_app(config_name=None):
         app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # CORS Configuration
-    app.config['ALLOWED_ORIGINS'] = [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173'
-    ]
+    # CORS Configuration - allow origins from environment or use defaults
+    allowed_origins = os.environ.get('ALLOWED_ORIGINS', '')
+    if allowed_origins:
+        app.config['ALLOWED_ORIGINS'] = [origin.strip() for origin in allowed_origins.split(',')]
+    else:
+        app.config['ALLOWED_ORIGINS'] = [
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'http://127.0.0.1:5173'
+        ]
     
     # Environment specific config
     if env == 'production':

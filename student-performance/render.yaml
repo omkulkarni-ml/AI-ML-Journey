@@ -1,0 +1,52 @@
+# Render Blueprint for Student Performance Predictor
+# This file configures both frontend and backend services on Render
+
+services:
+  # Backend API Service
+  - type: web
+    name: student-performance-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd api && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 "app:create_app()"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: student-performance-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: https://student-performance-app.onrender.com,https://student-performance-demo.onrender.com
+    disk:
+      name: model-storage
+      mountPath: /opt/render/project/src/models
+      sizeGB: 1
+
+  # Frontend Static Site
+  - type: static
+    name: student-performance-frontend
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: VITE_API_URL
+        value: https://student-performance-api.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: student-performance-db
+    plan: free
+    databaseName: student_performance
+    user: student_performance_user
