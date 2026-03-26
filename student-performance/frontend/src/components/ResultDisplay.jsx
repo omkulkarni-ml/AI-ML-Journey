@@ -1,5 +1,7 @@
 const ResultDisplay = ({ prediction, selectedFeatures, formData, onReset }) => {
-  const { prediction: score, confidence, min_score, max_score } = prediction
+  const { prediction: score, confidence, confidence_score, min_score, max_score } = prediction
+  // Use confidence_score if available (new API), fall back to confidence (legacy)
+  const confidenceValue = confidence_score !== undefined ? confidence_score : confidence
 
   const getPerformanceLevel = (score) => {
     if (score >= 15) return { label: 'Excellent', color: 'text-emerald-400' }
@@ -63,20 +65,27 @@ const ResultDisplay = ({ prediction, selectedFeatures, formData, onReset }) => {
           </div>
 
           {/* Performance Badge */}
-          <div className={`text-lg font-semibold mb-4 ${performance.color}`}>
+          <div className={`text-lg font-semibold mb-2 ${performance.color}`}>
             {performance.label}
           </div>
+          
+          {/* Grade */}
+          {prediction.grade && (
+            <div className="text-sm text-white/60 mb-4">
+              Grade: <span className="text-white font-medium">{prediction.grade}</span>
+            </div>
+          )}
 
           {/* Confidence */}
           <div className="mb-4">
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-white/40">Confidence</span>
-              <span className="text-white/60">{Math.round(confidence * 100)}%</span>
+              <span className="text-white/60">{Math.round(confidenceValue * 100)}%</span>
             </div>
             <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700"
-                style={{ width: `${confidence * 100}%` }}
+                style={{ width: `${confidenceValue * 100}%` }}
               />
             </div>
           </div>
