@@ -7,8 +7,8 @@ services:
     name: student-performance-api
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: cd api && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 "app:create_app()"
+    buildCommand: pip install -r student-performance/requirements.txt
+    startCommand: cd student-performance/api && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 "app:create_app()"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.6
@@ -31,8 +31,8 @@ services:
   - type: web
     name: student-performance-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    buildCommand: cd student-performance/frontend && npm install && npm run build
+    staticPublishPath: student-performance/frontend/dist
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
