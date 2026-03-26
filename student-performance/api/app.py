@@ -43,11 +43,16 @@ def create_app(config_name=None):
     app.config['JWT_HEADER_TYPE'] = 'Bearer'
     app.config['JWT_ERROR_MESSAGE_KEY'] = 'error'
     
-    # Database Configuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'DATABASE_URL', 
-        'sqlite:///student_performance.db'
-    )
+    # Database Configuration - use absolute path for SQLite
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        # Use absolute path for SQLite to avoid path issues
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        db_path = os.path.join(base_dir, 'instance', 'student_performance.db')
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # CORS Configuration
