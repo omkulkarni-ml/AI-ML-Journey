@@ -30,11 +30,12 @@ services:
       sizeGB: 1
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: student-performance-frontend
+    env: static
     plan: free
     buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/dist
+    staticPublishPath: frontend/dist
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
