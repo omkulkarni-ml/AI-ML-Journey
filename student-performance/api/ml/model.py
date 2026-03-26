@@ -5,10 +5,12 @@ import os
 import joblib
 import pandas as pd
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, '..', 'models', 'model.pkl')
-PIPELINE_PATH = os.path.join(BASE_DIR, '..', 'models', 'pipeline.pkl')
-COLUMNS_PATH = os.path.join(BASE_DIR, '..', 'models', 'columns.pkl')
+# Get the project root directory (student-performance folder)
+# This works regardless of where the script is run from
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'model.pkl')
+PIPELINE_PATH = os.path.join(BASE_DIR, 'models', 'pipeline.pkl')
+COLUMNS_PATH = os.path.join(BASE_DIR, 'models', 'columns.pkl')
 
 
 class StudentModel:
@@ -62,6 +64,21 @@ class StudentModel:
         }
         return info
 
+    def _get_grade(self, score):
+        """Convert numeric score to letter grade."""
+        if score >= 16:
+            return 'A - Excellent'
+        elif score >= 14:
+            return 'B - Good'
+        elif score >= 12:
+            return 'C - Satisfactory'
+        elif score >= 10:
+            return 'D - Pass'
+        elif score >= 8:
+            return 'E - Weak Pass'
+        else:
+            return 'F - Fail'
+
     def predict(self, input_data, selected_features=None):
         """Make a prediction using selected features."""
         if not self.is_loaded():
@@ -71,27 +88,34 @@ class StudentModel:
             }
 
         try:
+            # Create DataFrame with correct column order
             input_df = pd.DataFrame(columns=self.columns)
             input_df.loc[0] = 0
 
+            # Fill in provided feature values
             for feature, value in input_data.items():
                 if feature in input_df.columns:
                     input_df[feature] = value
 
+            # Make prediction
             if self.pipeline:
                 prediction = self.pipeline.predict(input_df)
             else:
                 prediction = self.model.predict(input_df)
 
+            prediction_value = round(float(prediction[0]), 2)
             confidence = self._calculate_confidence(input_df)
+            grade = self._get_grade(prediction_value)
 
             return {
                 'success': True,
-                'prediction': round(float(prediction[0]), 2),
-                'confidence': confidence,
+                'prediction': prediction_value,
+                'grade': grade,
+                'confidence_score': confidence,
                 'min_score': 0,
                 'max_score': 20,
-                'unit': 'grade (0-20)'
+                'unit': 'grade (0-20)',
+                'model_version': '1.0.0'
             }
 
         except Exception as e:
@@ -111,7 +135,8 @@ class StudentModel:
         ratio = non_default / total_features
         confidence = 0.6 + (ratio * 0.35)
 
-        return round(min(max(confidence, 0.6), 0.95), 2)
+        # Convert to Python float for JSON serialization
+        return float(round(min(max(confidence, 0.6), 0.95), 2))
 
 
 _model_instance = None
