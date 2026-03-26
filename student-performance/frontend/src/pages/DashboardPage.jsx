@@ -28,14 +28,24 @@ const DashboardContent = () => {
   }, [])
 
   const checkApiHealth = async () => {
-    try {
-      const response = await api.healthCheck()
-      if (response.data.success) {
-        setApiStatus('connected')
+    setApiStatus('checking')
+    // Try multiple times with delay for Render free tier wake-up
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const response = await api.healthCheck()
+        if (response.data.success) {
+          setApiStatus('connected')
+          return
+        }
+      } catch (err) {
+        console.log(`Health check attempt ${attempt} failed, retrying...`)
+        if (attempt < 3) {
+          // Wait 15 seconds before retry (Render free tier wake-up time)
+          await new Promise(resolve => setTimeout(resolve, 15000))
+        }
       }
-    } catch (err) {
-      setApiStatus('disconnected')
     }
+    setApiStatus('disconnected')
   }
 
   const loadFeatures = async () => {
