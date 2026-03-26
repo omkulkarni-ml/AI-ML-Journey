@@ -37,7 +37,7 @@ services:
       - key: NODE_VERSION
         value: 18.17.0
       - key: VITE_API_URL
-        value: https://student-performance-api.onrender.com/api
+        value: https://student-performance-api-1xia.onrender.com/api
     # Note: Render static sites automatically handle SPA routing
     # No explicit routes needed - all paths serve index.html
 
