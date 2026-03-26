@@ -29,12 +29,26 @@ POSSIBLE_PIPELINE_PATHS = [
     '/opt/render/project/src/student-performance/models/pipeline.pkl',
 ]
 
-def find_existing_file(paths):
+def find_existing_file(paths, file_type="file"):
     """Find the first existing file from a list of paths."""
+    print(f"Looking for {file_type} in paths: {paths}")
     for path in paths:
-        if os.path.exists(path):
-            print(f"Found model file at: {path}")
+        exists = os.path.exists(path)
+        print(f"  Checking {path}: {'EXISTS' if exists else 'NOT FOUND'}")
+        if exists:
+            print(f"Found {file_type} at: {path}")
             return path
+    # Log current working directory for debugging
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"BASE_DIR: {BASE_DIR}")
+    # List files in BASE_DIR if it exists
+    if os.path.exists(BASE_DIR):
+        print(f"Contents of BASE_DIR ({BASE_DIR}):")
+        try:
+            for item in os.listdir(BASE_DIR):
+                print(f"  - {item}")
+        except Exception as e:
+            print(f"  Error listing BASE_DIR: {e}")
     # Return first path as default (will fail gracefully later)
     return paths[0]
 
