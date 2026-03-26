@@ -112,7 +112,7 @@ def get_current_user():
     try:
         user_id = get_jwt_identity()
         if user_id:
-            return User.query.get(user_id)
+            return User.query.get(int(user_id))
     except Exception:
         pass
     return None
@@ -129,7 +129,7 @@ def require_active_user(fn):
         
         try:
             verify_jwt_in_request()
-            user_id = get_jwt_identity()
+            user_id = int(get_jwt_identity())
             user = User.query.get(user_id)
             
             if not user:
@@ -175,7 +175,7 @@ def check_permission(allowed_roles):
             
             try:
                 verify_jwt_in_request()
-                user_id = get_jwt_identity()
+                user_id = int(get_jwt_identity())
                 user = User.query.get(user_id)
                 
                 if not user:
