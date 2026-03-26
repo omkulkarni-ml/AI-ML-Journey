@@ -24,10 +24,8 @@ services:
           property: connectionString
       - key: ALLOWED_ORIGINS
         value: https://student-performance-app.onrender.com,https://student-performance-demo.onrender.com
-    disk:
-      name: model-storage
-      mountPath: /opt/render/project/src/models
-      sizeGB: 1
+    # Note: Disk removed - free tier doesn't support disks
+    # Model files are loaded from the repository directly
 
   # Frontend Static Site
   - type: web
