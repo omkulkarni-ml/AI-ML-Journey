@@ -8,9 +8,39 @@ import pandas as pd
 # Get the project root directory (student-performance folder)
 # This works regardless of where the script is run from
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MODEL_PATH = os.path.join(BASE_DIR, 'models', 'model.pkl')
-PIPELINE_PATH = os.path.join(BASE_DIR, 'models', 'pipeline.pkl')
-COLUMNS_PATH = os.path.join(BASE_DIR, 'models', 'columns.pkl')
+
+# For Render deployment, models are in student-performance/models
+# Try multiple paths to find the model files
+POSSIBLE_MODEL_PATHS = [
+    os.path.join(BASE_DIR, 'models', 'model.pkl'),  # Local development
+    os.path.join(BASE_DIR, 'student-performance', 'models', 'model.pkl'),  # Render monorepo
+    '/opt/render/project/src/student-performance/models/model.pkl',  # Render absolute path
+]
+
+POSSIBLE_COLUMNS_PATHS = [
+    os.path.join(BASE_DIR, 'models', 'columns.pkl'),
+    os.path.join(BASE_DIR, 'student-performance', 'models', 'columns.pkl'),
+    '/opt/render/project/src/student-performance/models/columns.pkl',
+]
+
+POSSIBLE_PIPELINE_PATHS = [
+    os.path.join(BASE_DIR, 'models', 'pipeline.pkl'),
+    os.path.join(BASE_DIR, 'student-performance', 'models', 'pipeline.pkl'),
+    '/opt/render/project/src/student-performance/models/pipeline.pkl',
+]
+
+def find_existing_file(paths):
+    """Find the first existing file from a list of paths."""
+    for path in paths:
+        if os.path.exists(path):
+            print(f"Found model file at: {path}")
+            return path
+    # Return first path as default (will fail gracefully later)
+    return paths[0]
+
+MODEL_PATH = find_existing_file(POSSIBLE_MODEL_PATHS)
+COLUMNS_PATH = find_existing_file(POSSIBLE_COLUMNS_PATHS)
+PIPELINE_PATH = find_existing_file(POSSIBLE_PIPELINE_PATHS)
 
 
 class StudentModel:
