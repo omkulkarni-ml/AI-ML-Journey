@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { useEffect } from 'react'
 
 // Pages
 import LoginPage from './pages/LoginPage'
@@ -10,7 +11,22 @@ import DashboardPage from './pages/DashboardPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
 
+// API
+import api from './services/api'
+
 function App() {
+  // Wake up the backend on app load (Render free tier)
+  useEffect(() => {
+    const wakeUpBackend = async () => {
+      try {
+        await api.healthCheck()
+        console.log('Backend is awake')
+      } catch (error) {
+        console.log('Backend waking up...')
+      }
+    }
+    wakeUpBackend()
+  }, [])
   return (
     <Router>
       <Toaster

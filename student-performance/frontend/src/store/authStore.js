@@ -46,7 +46,17 @@ const useAuthStore = create(
           
           return { success: true, user }
         } catch (error) {
-          const message = error.response?.data?.error || 'Login failed'
+          console.error('Login error:', error)
+          let message = 'Login failed'
+          if (error.response?.data?.error) {
+            message = error.response.data.error
+          } else if (error.message === 'Network Error') {
+            message = 'Server is waking up. Please wait 30 seconds and try again.'
+          } else if (error.code === 'ECONNABORTED') {
+            message = 'Connection timeout. Server may be starting up.'
+          } else if (error.message) {
+            message = `Login failed: ${error.message}`
+          }
           set({ isLoading: false, error: message })
           return { success: false, error: message }
         }
