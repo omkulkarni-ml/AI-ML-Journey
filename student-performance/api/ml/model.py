@@ -133,7 +133,7 @@ class StudentModel:
     def predict(self, input_data, selected_features=None):
         """Make a prediction using selected features."""
         self._ensure_loaded()
-        if not self.model or not self.columns:
+        if self.model is None or self.columns is None or len(self.columns) == 0:
             return {
                 'success': False,
                 'error': 'Model not loaded'
