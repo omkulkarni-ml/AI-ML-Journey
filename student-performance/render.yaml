@@ -23,7 +23,7 @@ services:
           name: student-performance-db
           property: connectionString
       - key: ALLOWED_ORIGINS
-        value: https://student-performance-app.onrender.com,https://student-performance-demo.onrender.com
+        value: https://student-performance-frontend-app7.onrender.com,https://student-performance-app.onrender.com,https://student-performance-demo.onrender.com
     # Note: Disk removed - free tier doesn't support disks
     # Model files are loaded from the repository directly
 
