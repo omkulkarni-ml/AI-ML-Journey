@@ -21,15 +21,19 @@ const LoginForm = () => {
     formState: { errors, isSubmitting }
   } = useForm()
 
+  const [retryCount, setRetryCount] = useState(0)
+  const MAX_RETRIES = 3
+
   const onSubmit = async (data) => {
     clearError()
     setIsWakingUp(false)
     const result = await login(data.email, data.password)
     
-    // If server is waking up, auto-retry after countdown
-    if (!result.success && result.error?.includes('waking up')) {
+    // If server is waking up, auto-retry after countdown (max 3 retries)
+    if (!result.success && result.error?.includes('waking up') && retryCount < MAX_RETRIES) {
       setIsWakingUp(true)
-      setCountdown(30)
+      setCountdown(45) // Increased to 45 seconds
+      setRetryCount(prev => prev + 1)
       
       // Start countdown
       const timer = setInterval(() => {
@@ -51,7 +55,11 @@ const LoginForm = () => {
     
     if (result.success) {
       setIsWakingUp(false)
+      setRetryCount(0)
       navigate('/dashboard')
+    } else if (retryCount >= MAX_RETRIES) {
+      setIsWakingUp(false)
+      setRetryCount(0)
     }
   }
 
