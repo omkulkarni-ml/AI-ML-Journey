@@ -61,18 +61,15 @@ class StudentModel:
     """Wrapper class for the student performance prediction model."""
 
     def __init__(self, model_path=None, pipeline_path=None, columns_path=None):
-        """Initialize the model wrapper."""
+        """Initialize the model wrapper - lazy loading to save memory."""
         self.model = None
         self.pipeline = None
         self.columns = None
         self._loaded = False
-
-        model_path = model_path or MODEL_PATH
-        pipeline_path = pipeline_path or PIPELINE_PATH
-        columns_path = columns_path or COLUMNS_PATH
-
-        self._load_model(model_path, columns_path)
-        self._load_pipeline(pipeline_path)
+        self._model_path = model_path or MODEL_PATH
+        self._pipeline_path = pipeline_path or PIPELINE_PATH
+        self._columns_path = columns_path or COLUMNS_PATH
+        # Don't load at startup - lazy load on first use
 
     def _load_model(self, model_path, columns_path):
         """Load the trained model and column names."""
@@ -93,8 +90,18 @@ class StudentModel:
             print(f"Warning: Pipeline file not found at {pipeline_path}")
             self.pipeline = None
 
+    def _ensure_loaded(self):
+        """Lazy load the model if not already loaded."""
+        if not self._loaded:
+            print("Lazy loading model...")
+            self._load_model(self._model_path, self._columns_path)
+            self._load_pipeline(self._pipeline_path)
+            self._loaded = True
+            print(f"Model loaded: {self.is_loaded()}")
+
     def is_loaded(self):
         """Check if model is loaded successfully."""
+        self._ensure_loaded()
         return self.model is not None and self.columns is not None
 
     def get_model_info(self):
@@ -125,7 +132,8 @@ class StudentModel:
 
     def predict(self, input_data, selected_features=None):
         """Make a prediction using selected features."""
-        if not self.is_loaded():
+        self._ensure_loaded()
+        if not self.model or not self.columns:
             return {
                 'success': False,
                 'error': 'Model not loaded'
