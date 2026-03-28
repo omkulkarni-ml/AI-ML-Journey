@@ -10,6 +10,8 @@ import useAuthStore from '../../store/authStore'
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [isWakingUp, setIsWakingUp] = useState(false)
+  const [countdown, setCountdown] = useState(0)
   const { login, error, clearError } = useAuthStore()
   const navigate = useNavigate()
   
@@ -21,8 +23,34 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     clearError()
+    setIsWakingUp(false)
     const result = await login(data.email, data.password)
+    
+    // If server is waking up, auto-retry after countdown
+    if (!result.success && result.error?.includes('waking up')) {
+      setIsWakingUp(true)
+      setCountdown(30)
+      
+      // Start countdown
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            // Auto-retry login after countdown
+            setTimeout(() => {
+              onSubmit(data)
+            }, 1000)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      
+      return
+    }
+    
     if (result.success) {
+      setIsWakingUp(false)
       navigate('/dashboard')
     }
   }
@@ -38,14 +66,27 @@ const LoginForm = () => {
         <p className="text-gray-400">Sign in to continue to Student Performance Predictor</p>
       </div>
 
-      {error && (
+      {(error || isWakingUp) && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3"
+          className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+            isWakingUp 
+              ? 'bg-yellow-500/10 border border-yellow-500/20' 
+              : 'bg-red-500/10 border border-red-500/20'
+          }`}
         >
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-          <p className="text-red-400 text-sm">{error}</p>
+          <AlertCircle className={`w-5 h-5 flex-shrink-0 ${
+            isWakingUp ? 'text-yellow-400' : 'text-red-400'
+          }`} />
+          <p className={`text-sm ${
+            isWakingUp ? 'text-yellow-400' : 'text-red-400'
+          }`}>
+            {isWakingUp 
+              ? `Server is waking up... Auto-retrying in ${countdown} seconds` 
+              : error
+            }
+          </p>
         </motion.div>
       )}
 
